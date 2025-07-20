@@ -12,10 +12,26 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    var swaggerUrl = "https://localhost:5001/swagger"; // או http://localhost:5000/swagger אם אתה בלי HTTPS
+    try
+    {
+        var psi = new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = swaggerUrl,
+            UseShellExecute = true
+        };
+        System.Diagnostics.Process.Start(psi);
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine("Couldn't open browser: " + ex.Message);
+    }
 }
 
-app.UseHttpsRedirection();
-
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
