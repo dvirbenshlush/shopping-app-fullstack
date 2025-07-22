@@ -1,15 +1,13 @@
-import { OrderSummary } from "../models/order.model";
+import { OrderSummary } from "../../models/order.model";
 import { Client } from "@opensearch-project/opensearch";
 
 const client = new Client({
   node: process.env.OPENSEARCH_NODE || "http://localhost:9200"
 });
 
-// במימוש פשוט - במציאות תצטרך לנהל session של משתמש כדי לשמור עגלה
 
 let cart: { productId: string; quantity: number }[] = [];
 
-// דוגמה של קטגוריות - אפשר להרחיב ולשמור ב-ES או DB אחר
 const categories = [
   { id: "1", name: "פירות" },
   { id: "2", name: "ירקות" },
@@ -31,7 +29,6 @@ export async function fetchProductsByCategory(categoryId: string) {
 }
 
 export async function addToCart(productId: string, quantity: number) {
-  // אם כבר קיים מוצר כזה בעגלה, מעדכן כמות
   const index = cart.findIndex((item) => item.productId === productId);
   if (index > -1) {
     cart[index].quantity += quantity;
@@ -42,7 +39,6 @@ export async function addToCart(productId: string, quantity: number) {
 }
 
 export async function getCart() {
-  // מחזיר רשימת מוצרים עם כמות
   return cart.map(item => {
     const product = products.find(p => p.id === item.productId);
     return {
@@ -60,13 +56,11 @@ export async function confirmOrder(customerData: { firstName: string, lastName: 
     createdAt: new Date().toISOString()
   };
 
-  // שמירת ההזמנה ב-ElasticSearch
   const result = await client.index({
     index: "orders",
     body: order,
   });
 
-  // לאחר שמירת ההזמנה מנקה את העגלה
   cart = [];
 
   return {
