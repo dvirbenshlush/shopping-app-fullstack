@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import * as ordersService from "../services/orders.service";
+import * as ordersService from "./orders.service";
 
 export async function getCategories(req: Request, res: Response, next: NextFunction) {
   try {
