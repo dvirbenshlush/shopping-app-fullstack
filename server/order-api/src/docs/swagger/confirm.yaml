@@ -1,0 +1,25 @@
+paths:
+  /api/orders/confirm:
+    post:
+      summary: Confirm order with details
+      tags:
+        - Orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: "user123"
+                paymentMethod:
+                  type: string
+                  example: "credit_card"
+                address:
+                  type: string
+                  example: "123 Main St"
+      responses:
+        '200':
+          description: Order confirmed successfully
