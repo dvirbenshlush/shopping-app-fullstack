@@ -11,7 +11,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 10,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null
+        )
+    )
+);
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -36,31 +44,25 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    string swaggerUrl = builder.Configuration["Swagger:Url"];
+app.UseSwagger();
+app.UseSwaggerUI();
+string swaggerUrl = builder.Configuration["Swagger:Url"];
 
-    try
-    {
-        var psi = new System.Diagnostics.ProcessStartInfo
-        {
-            FileName = swaggerUrl,
-            UseShellExecute = true
-        };
-        System.Diagnostics.Process.Start(psi);
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine("Couldn't open browser: " + ex.Message);
-    }
-//}
-
-if (!app.Environment.IsDevelopment())
+try
 {
-    app.UseHttpsRedirection();
+    var psi = new System.Diagnostics.ProcessStartInfo
+    {
+        FileName = swaggerUrl,
+        UseShellExecute = true
+    };
+    System.Diagnostics.Process.Start(psi);
+}
+catch (Exception ex)
+{
+    Console.WriteLine("Couldn't open browser: " + ex.Message);
 }
 app.UseCors("AllowLocalhost3000");
+
+app.UseHttpsRedirection();
 app.MapControllers();
 app.Run();
