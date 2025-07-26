@@ -1,3 +1,5 @@
+import { Category } from "./category.model";
+
 export interface OrderSummary {
   orderId: string;
   customer: {
@@ -6,10 +8,6 @@ export interface OrderSummary {
     address: string;
     email: string;
   };
-  items: {
-    productId: string;
-    name: string;
-    quantity: number;
-  }[];
+  items: Category[];
   createdAt: string;
 }
