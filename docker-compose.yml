@@ -1,0 +1,53 @@
+services:
+
+  catalog-api:
+    build:
+      context: ./server/catalog-api
+    ports:
+      - "5000:80"
+    depends_on:
+      - sqlserver
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: false
+      ConnectionStrings__DefaultConnection: Server=sqlserver;Database=CatalogDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True
+      Logging__LogLevel__Default: Information
+      Logging__LogLevel__Microsoft.AspNetCore: Warning
+      Swagger__Url: http://localhost:5000/swagger
+      AllowedHosts: "*"
+
+  order-api:
+    build:
+      context: ./server/order-api
+    ports:
+      - "5001:3000"
+    depends_on:
+      - mongo
+    environment:
+      MONGO_URL: mongodb://mongo:27017/orders
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - catalog-api
+      - order-api
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    ports:
+      - "27017:27017"
