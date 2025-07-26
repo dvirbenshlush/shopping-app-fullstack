@@ -12,12 +12,12 @@ public class CategoryService : ICategoryService
         _repo = repo;
     }
 
-    public async Task<List<Category>> GetAllCategoriesAsync()
+    public async Task<StoreResponse<List<Category>>> GetAllCategoriesAsync()
     {
         return await _repo.GetAllAsync();
     }
 
-    public async Task<List<Product>> GetProductsByCategoryAsync(int categoryId)
+    public async Task<StoreResponse<List<Product>>> GetProductsByCategoryAsync(int categoryId)
     {
         return await _repo.GetProductsByCategoryAsync(categoryId);
     }
